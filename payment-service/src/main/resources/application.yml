@@ -6,7 +6,9 @@ server:
     kafka:
     bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
     topic:
-      teste: teste
+        orchestrator: orchestrator
+        payment-fail: payment-fail
+        payment-success: payment-success
     consumer:
       group-id: payment-group
       auto-offset-reset: leatest
