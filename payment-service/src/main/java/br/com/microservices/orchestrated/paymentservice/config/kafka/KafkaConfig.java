@@ -1,10 +1,12 @@
 package br.com.microservices.orchestrated.paymentservice.config.kafka;
 
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -23,6 +25,9 @@ import java.util.HashMap;
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {
+
+    private static final Integer PARTITION_COUNT = 1;
+    private static final Integer REPLICA_COUNT = 1;
     
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -30,6 +35,12 @@ public class KafkaConfig {
     private String groupId;
     @Value("${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
+    @Value("${spring.kafka.topic.orchestrator}")
+    private String orchestratorTopic;
+    @Value("${spring.kafka.topic.payment-fail}")
+    private String paymentFailTopic;
+    @Value("${spring.kafka.topic.payment-success}")
+    private String paymentSuccessTopic;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -62,5 +73,27 @@ public class KafkaConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    private NewTopic buildTopic(String name){
+        return TopicBuilder.name(name)
+                .partitions(PARTITION_COUNT)
+                .replicas(REPLICA_COUNT)
+                .build();
+    }
+
+    @Bean 
+    public NewTopic orchestratorTopic() {
+        return buildTopic(orchestratorTopic);
+    }
+
+    @Bean 
+    public NewTopic paymentSuccessTopic() {
+        return buildTopic(paymentSuccessTopic);
+    }
+
+    @Bean 
+    public NewTopic paymentFailTopic() {
+        return buildTopic(paymentFailTopic);
     }
 }

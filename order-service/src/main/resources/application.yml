@@ -9,7 +9,7 @@ spring:
       notify-ending: notify-ending
     consumer:
       group-id: order-group
-      auto-offset-reset: leatest
+      auto-offset-reset: latest
 
   data:
     mongodb:

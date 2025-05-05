@@ -1,10 +1,12 @@
 package br.com.microservices.orchestrated.orchestratorservice.Config.kafka;
 
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -16,6 +18,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 
+import br.com.microservices.orchestrated.orchestratorservice.core.enums.Etopics;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -23,6 +27,9 @@ import java.util.HashMap;
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {
+
+    private static final Integer PARTITION_COUNT = 1;
+    private static final Integer REPLICA_COUNT = 1;
     
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -62,5 +69,68 @@ public class KafkaConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    private NewTopic buildTopic(String name){
+        return TopicBuilder.name(name)
+                .partitions(PARTITION_COUNT)
+                .replicas(REPLICA_COUNT)
+                .build();
+    }
+
+
+    @Bean
+    public NewTopic startSagaTopic() {
+        return buildTopic(Etopics.START_SAGA.getTopic());
+    }
+
+    @Bean 
+    public NewTopic orchestratorTopic() {
+        return buildTopic(Etopics.BASE_ORCHERTRATOR.getTopic());
+    }
+
+    @Bean
+    public NewTopic finishSuccessTopic() {
+        return buildTopic(Etopics.FINISH_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic finishFailTopic() {
+        return buildTopic(Etopics.FINISH_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic productValidationSuccessTopic() {
+        return buildTopic(Etopics.PRODUCT_VALIDATION_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic productValidationFailTopic() {
+        return buildTopic(Etopics.PRODUCT_VALIDATION_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic paymentSuccessTopic() {
+        return buildTopic(Etopics.PAYMENT_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic paymentFailTopic() {
+        return buildTopic(Etopics.PAYMENT_FAIL.getTopic());
+    }
+    
+    @Bean
+    public NewTopic inventorySuccessTopic() {
+        return buildTopic(Etopics.INVENTORY_SUCCESS.getTopic());
+    }
+    
+    @Bean
+    public NewTopic inventoryFailTopic() {
+        return buildTopic(Etopics.INVENTORY_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic notifyEndingTopic() {
+        return buildTopic(Etopics.NOTIFY_ENDING.getTopic());
     }
 }
