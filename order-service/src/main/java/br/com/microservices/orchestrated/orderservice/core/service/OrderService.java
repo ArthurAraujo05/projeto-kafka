@@ -44,7 +44,7 @@ public class OrderService {
                 .builder()
                 .transactionId(order.getTrasactionId())
                 .orderId(order.getId())
-                .payloud(order)
+                .payload(order)
                 .createdAt(LocalDateTime.now())
                 .build();
         eventService.save(event);

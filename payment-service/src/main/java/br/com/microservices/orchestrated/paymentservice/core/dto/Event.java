@@ -18,7 +18,7 @@ public class Event {
     private String id;
     private String transactionId;
     private String orderId;
-    private Order payloud;
+    private Order payload;
     private String source;
     private ESagaStatus status;
     private List<History> eveHistory;
